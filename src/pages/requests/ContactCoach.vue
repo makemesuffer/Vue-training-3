@@ -1,16 +1,56 @@
 <template>
-  <form>
-    <div>
+  <form @submit.prevent="submitForm">
+    <div class="form-control">
       <label for="email">Your E-mail</label>
-      <input type="email" id="email" />
+      <input type="email" id="email" v-model.trim="email" />
     </div>
-    <div>
+    <div class="form-control">
       <label for="message">Message</label>
-      <input type="email" id="email" />
+      <textarea
+        type="text"
+        id="message"
+        rows="5"
+        v-model.trim="message"
+      ></textarea>
     </div>
-    <div><label for=""></label><input type="text" /></div>
+    <p class="errors" v-if="!formIsValid">
+      Please enter a valid email and non-empty message.
+    </p>
+    <div class="actions"><base-button>Send Message</base-button></div>
   </form>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      email: "",
+      message: "",
+      formIsValid: true,
+    };
+  },
+  methods: {
+    submitForm() {
+      this.formIsValid = true;
+      if (
+        this.email === "" ||
+        !this.email.includes("@") ||
+        this.message === ""
+      ) {
+        this.formIsValid = false;
+        return;
+      }
+      this.$store.dispatch("requests/contactCoach", {
+        email: this.email,
+        message: this.message,
+        coachId: this.$route.params.id,
+      });
+
+      this.$router.replace("/coaches");
+    },
+  },
+};
+</script>
 
 <style scoped>
 form {
